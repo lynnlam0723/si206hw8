@@ -54,7 +54,7 @@ def plot_rest_categories(db):
             cat = cur.fetchone()[0]
             rests[cat] = count
 
-    x = rests.keys()
+    x = list(rests.keys())
     y = rests.values()
     ax = plt.subplot()
     ax.set_xlabel("Number of Restaurants")
@@ -62,6 +62,8 @@ def plot_rest_categories(db):
     ax.set_title("Types of Restaurants on South University Ave")
     ax.barh(x, y)
     plt.show()
+
+    return rests
 
 
 def find_rest_in_building(building_num, db):
@@ -75,13 +77,12 @@ def find_rest_in_building(building_num, db):
     cur = conn.cursor()
     cur.execute("SELECT * FROM restaurants")
     data = cur.fetchall()
-    #data.sort(key = lambda x: x[4], reverse = True)
+    data.sort(key = lambda x: x[4], reverse = True)
 
     cur.execute("SELECT id FROM buildings WHERE building = ?", (building_num,))
     id_num = cur.fetchone()[0]
     cur.execute("SELECT name FROM restaurants WHERE building_id = ?", (id_num,))
     rests = list(cur.fetchall())
-    rests.sort(key = lambda x: x[4], reverse=True)
     return rests
 
 
