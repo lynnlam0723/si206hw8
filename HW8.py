@@ -24,9 +24,9 @@ def load_rest_data(db):
 
     rests = dict()
     for d in data:
-        cur.execute("SELECT category FROM categories WHERE id = ", (d[2],))
+        cur.execute("SELECT category FROM categories WHERE id = ?", (d[2],))
         cat = cur.fetchone()[0]
-        cur.execute("SELECT building FROM buildings WHERE id = ", (d[3],))
+        cur.execute("SELECT building FROM buildings WHERE id = ?", (d[3],))
         build = cur.fetchone()[0]
         inner = {"category": cat, "building": build, "rating": d[4]}
         rests[d[1]] = inner
@@ -55,12 +55,12 @@ def plot_rest_categories(db):
             rests[cat] = count
 
     x = rests.keys()
-    y = rests.items()
-    plt.figure(1)
-    plt.set_xlabel("Number of Restaurants")
-    plt.set_ylabel("Restaurant Categories")
-    plt.set_title("Types of Restaurants on South University Ave")
-    plt.barh(x, y)
+    y = rests.values()
+    ax = plt.subplot()
+    ax.set_xlabel("Number of Restaurants")
+    ax.set_ylabel("Restaurant Categories")
+    ax.set_title("Types of Restaurants on South University Ave")
+    ax.barh(x, y)
     plt.show()
 
 
@@ -75,12 +75,14 @@ def find_rest_in_building(building_num, db):
     cur = conn.cursor()
     cur.execute("SELECT * FROM restaurants")
     data = cur.fetchall()
-    data.sort(key = lambda x: x[4], reverse = True)
+    #data.sort(key = lambda x: x[4], reverse = True)
 
     cur.execute("SELECT id FROM buildings WHERE building = ?", (building_num,))
     id_num = cur.fetchone()[0]
     cur.execute("SELECT name FROM restaurants WHERE building_id = ?", (id_num,))
-    return list(cur.fetchall())
+    rests = list(cur.fetchall())
+    rests.sort(key = lambda x: x[4], reverse=True)
+    return rests
 
 
 #EXTRA CREDIT
