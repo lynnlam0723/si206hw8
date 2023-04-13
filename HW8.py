@@ -1,6 +1,6 @@
-# Your name: 
-# Your student id:
-# Your email:
+# Your name: Lynn Lam
+# Your student id: 48156174
+# Your email: lynnla@umich.edu
 # List who you have worked with on this homework:
 
 import matplotlib.pyplot as plt
@@ -15,7 +15,18 @@ def load_rest_data(db):
     and each inner key is a dictionary, where the key:value pairs should be the category, 
     building, and rating for the restaurant.
     """
-    pass
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+ db)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM restaurants")
+    data = cur.fetchall()
+    #format: id, name, category, building, rating
+
+    rests = dict()
+    for d in data:
+        inner = {"category": d[2], "building": d[3], "rating": d[4]}
+        rests[d[1]: inner]
+    return rests
 
 def plot_rest_categories(db):
     """
@@ -23,7 +34,31 @@ def plot_rest_categories(db):
     restaurant categories and the values should be the number of restaurants in each category. The function should
     also create a bar chart with restaurant categories and the count of number of restaurants in each category.
     """
-    pass
+
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+ db)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM ?", (db,))
+    data = cur.fetchall()
+    rests = dict()
+
+    for d in data:
+        if d[2] not in rests:
+            cur.execute("SELECT COUNT(category_id) FROM restaurants WHERE category_id = ?", (db, d[2]))
+            count = cur.fetchone()[0]
+            cur.execute("SELECT category FROM categories WHERE id = ?", (d[2]))
+            cat = cur.fetchone()[0]
+            rests[cat] = count
+
+    x = rests.keys()
+    y = rests.items()
+    plt.figure(1)
+    plt.set_xlabel("Number of Restaurants")
+    plt.set_ylabel("Restaurant Categories")
+    plt.set_title("Types of Restaurants on South University Ave")
+    plt.barh(x, y)
+    plt.show()
+
 
 def find_rest_in_building(building_num, db):
     '''
@@ -31,7 +66,13 @@ def find_rest_in_building(building_num, db):
     restaurant names. You need to find all the restaurant names which are in the specific building. The restaurants 
     should be sorted by their rating from highest to lowest.
     '''
-    pass
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path+'/'+ db)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM ?", (db,))
+    data = cur.fetchall()
+
+    
 
 #EXTRA CREDIT
 def get_highest_rating(db): #Do this through DB as well
