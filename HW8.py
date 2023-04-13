@@ -24,9 +24,9 @@ def load_rest_data(db):
 
     rests = dict()
     for d in data:
-        cur.execute("SELECT category FROM categories WHERE id = ", d[2])
+        cur.execute("SELECT category FROM categories WHERE id = ", (d[2],))
         cat = cur.fetchone()[0]
-        cur.execute("SELECT building FROM buildings WHERE id = ", d[3])
+        cur.execute("SELECT building FROM buildings WHERE id = ", (d[3],))
         build = cur.fetchone()[0]
         inner = {"category": cat, "building": build, "rating": d[4]}
         rests[d[1]] = inner
@@ -48,9 +48,9 @@ def plot_rest_categories(db):
 
     for d in data:
         if d[2] not in rests:
-            cur.execute("SELECT COUNT(category_id) FROM restaurants WHERE category_id = ?", (d[2]))
+            cur.execute("SELECT COUNT(category_id) FROM restaurants WHERE category_id = ?", (d[2],))
             count = cur.fetchone()[0]
-            cur.execute("SELECT category FROM categories WHERE id = ?", (d[2]))
+            cur.execute("SELECT category FROM categories WHERE id = ?", (d[2],))
             cat = cur.fetchone()[0]
             rests[cat] = count
 
@@ -79,7 +79,7 @@ def find_rest_in_building(building_num, db):
 
     cur.execute("SELECT id FROM buildings WHERE building = ?", (building_num,))
     id_num = cur.fetchone()[0]
-    cur.execute("SELECT name FROM restaurants WHERE building_id = ?", id_num)
+    cur.execute("SELECT name FROM restaurants WHERE building_id = ?", (id_num,))
     return list(cur.fetchall())
 
 
